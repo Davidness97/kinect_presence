@@ -1,0 +1,28 @@
+{
+  "name": "Kinect v2 MQTT Bridge",
+  "version": "1.0.0",
+  "slug": "kinect_v2_mqtt_bridge",
+  "description": "Pubblica gli stati di presenza, distanza e conteggio del Kinect v2 su MQTT, gestendo soglie dinamiche.",
+  "arch": ["amd64", "armhf", "aarch64"],
+  "startup": "services",
+  "boot": "auto",
+  "host_network": true,             
+  "privileged": true,               
+  "devices": [],                    
+  "options": {
+    "mqtt_broker": "core-mqtt",
+    "mqtt_user": "",
+    "mqtt_password": "",
+    "topic_presenza": "kinect/sala/presenza",
+    "soglia_pixel": 5000,
+    "umidita_profondita_mm": 3800
+  },
+  "schema": {
+    "mqtt_broker": "str",
+    "mqtt_user": "str",
+    "mqtt_password": "str",
+    "topic_presenza": "str",
+    "soglia_pixel": "int",
+    "umidita_profondita_mm": "int"
+  }
+}
