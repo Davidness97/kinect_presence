@@ -1,4 +1,4 @@
-FROM hassioaddons/base-ubuntu:latest
+FROM %%BASE_IMAGE%%
 
 # 1. Installazione delle dipendenze di sistema (necessarie per la compilazione)
 # jq è necessario per run.sh
@@ -59,3 +59,4 @@ RUN chmod a+x /usr/bin/run.sh
 
 # Punto di ingresso
 CMD [ "/usr/bin/run.sh" ]
+
