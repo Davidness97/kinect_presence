@@ -5,4 +5,4 @@ build_from:
   aarch64: "hassioaddons/base-ubuntu:latest"
 
 # Indica che l'ambiente di build è nella sottocartella 'root'
-dockerfile: root/Dockerfile
+dockerfile: Dockerfile
