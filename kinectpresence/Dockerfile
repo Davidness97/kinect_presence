@@ -33,9 +33,9 @@ RUN git clone https://github.com/r9y9/pylibfreenect2.git /tmp/pylibfreenect2 && 
     cd / && \
     rm -rf /tmp/pylibfreenect2
 
-# CONFIGURAZIONE AVVIO CON SCRIPT CRITICA: LD_LIBRARY_PATH FORZATO AL RUNTIME
+# CONFIGURAZIONE AVVIO CON SCRIPT CRITICA: LD_LIBRARY_PATH FORZATO AL RUNTIME E LOGGING FORZATO
 # [Step 8/10] Crea e rende eseguibile lo script di avvio
-RUN printf '#!/usr/bin/env bash\n\nset -e\n\n# Aggiunge il percorso della libreria C++ (libfreenect2) per il runtime Python\nexport LD_LIBRARY_PATH="/usr/local/lib":$LD_LIBRARY_PATH\n\n# Esegue lo script Python e lo mantiene come PID 1\nexec /usr/bin/python3 /app/kinect_mqtt_bridge.py\n' > /run.sh
+RUN printf '#!/usr/bin/env bash\n\nset -e\n\n# Messaggio diagnostico di avvio\necho "Inizializzazione script di avvio del container..."\n/usr/bin/python3 --version\n\n# Aggiunge il percorso della libreria C++ (libfreenect2) per il runtime Python\nexport LD_LIBRARY_PATH="/usr/local/lib":$LD_LIBRARY_PATH\n\n# Esegue lo script Python, reindirizzando stderr (errori) a stdout (log)\nexec /usr/bin/python3 /app/kinect_mqtt_bridge.py 2>&1\n' > /run.sh
 RUN chmod +x /run.sh
 
 # [Step 9/10] L'istruzione CMD esegue lo script di avvio.
