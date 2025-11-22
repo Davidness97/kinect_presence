@@ -21,13 +21,15 @@ RUN apk update \
 WORKDIR /app
 COPY kinect_mqtt_bridge.py /app/
 
-# Installazione delle dipendenze Python: paho-mqtt per la comunicazione e il compilatore del Kinect
+# 1. Installazione di NumPy e dipendenze di build (per risolvere il ModuleNotFoundError)
 RUN pip3 install \
     --no-cache-dir \
     --break-system-packages \
-    numpy
+    numpy \
+    cython \              # <-- AGGIUNGI QUESTO
+    setuptools            # <-- AGGIUNGI QUESTO (per setuptools/build_meta.py)
 
-# 2. Installazione delle dipendenze principali 
+# 2. Installazione delle dipendenze principali (Ora NumPy, Cython e setuptools sono disponibili)
 RUN pip3 install \
     --no-cache-dir \
     --break-system-packages \
@@ -41,6 +43,7 @@ RUN chmod a+x /usr/bin/run.sh
 
 # 4. ENTRYPOINT: L'esecuzione parte da qui
 CMD [ "/usr/bin/run.sh" ]
+
 
 
 
