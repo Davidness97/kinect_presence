@@ -17,6 +17,18 @@ RUN apk update \
         git \
     && rm -rf /var/cache/apk/*
 
+RUN git clone https://github.com/OpenKinect/libfreenect2.git /tmp/libfreenect2 \
+    && mkdir -p /tmp/libfreenect2/build \
+    && cd /tmp/libfreenect2/build \
+    && cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local \
+    && make -j$(nproc) \
+    && make install \
+    && cd / \
+    && rm -rf /tmp/libfreenect2
+
+# 3. Definizione dell'ambiente Python e installazione di Mqtt
+WORKDIR /app
+
 # 2. Definizione dell'ambiente Python e installazione di Mqtt
 WORKDIR /app
 COPY kinect_mqtt_bridge.py /app/
@@ -44,6 +56,7 @@ RUN chmod a+x /usr/bin/run.sh
 
 # 4. ENTRYPOINT: L'esecuzione parte da qui
 CMD [ "/usr/bin/run.sh" ]
+
 
 
 
