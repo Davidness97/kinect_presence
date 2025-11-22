@@ -1,8 +1,6 @@
-# Specifica l'architettura di base e dove trovare il Dockerfile
 build_from:
-  amd64: "hassioaddons/base-ubuntu:latest"
-  armhf: "hassioaddons/base-ubuntu:latest"
-  aarch64: "hassioaddons/base-ubuntu:latest"
+  amd64: "ghcr.io/home-assistant/amd64-base:latest"
+  armhf: "ghcr.io/home-assistant/armhf-base:latest"
+  aarch64: "ghcr.io/home-assistant/aarch64-base:latest"
 
-# Indica che l'ambiente di build è nella sottocartella 'root'
 dockerfile: root/Dockerfile
