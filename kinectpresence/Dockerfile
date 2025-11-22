@@ -16,6 +16,12 @@ RUN git clone https://github.com/OpenKinect/libfreenect2.git /tmp/libfreenect2 &
     cd / && \
     rm -rf /tmp/libfreenect2
 
+# [NUOVO STEP 4/10] **CRITICO** Configura il percorso di ricerca delle librerie dinamiche per Alpine.
+# Questo garantisce che il sistema operativo trovi libfreenect2.so senza LD_LIBRARY_PATH.
+RUN mkdir -p /etc/ld.so.conf.d && \
+    echo "/usr/local/lib" > /etc/ld.so.conf.d/libfreenect2.conf && \
+    ldconfig
+
 WORKDIR /app
 
 # [Step 5/10] Copia lo script Python
@@ -24,18 +30,17 @@ COPY kinect_mqtt_bridge.py /app/
 # [Step 6/10] Installa le dipendenze di base per la compilazione Python
 RUN pip3 install --no-cache-dir --break-system-packages numpy cython setuptools paho-mqtt
 
-# [Step 7/10] Installa pylibfreenect2 dalla sorgente (richiede il percorso corretto solo per il build)
+# [Step 7/10] Installa pylibfreenect2 dalla sorgente (il linking C++ è ora globale)
 RUN git clone https://github.com/r9y9/pylibfreenect2.git /tmp/pylibfreenect2 && \
     cd /tmp/pylibfreenect2 && \
     PKG_CONFIG_PATH="/usr/local/lib/pkgconfig" \
-    LD_LIBRARY_PATH="/usr/local/lib" \
     pip3 install --no-cache-dir --break-system-packages --no-build-isolation . && \
     cd / && \
     rm -rf /tmp/pylibfreenect2
 
-# CONFIGURAZIONE AVVIO CON SCRIPT CRITICA: LD_LIBRARY_PATH FORZATO AL RUNTIME E LOGGING FORZATO
-# [Step 8/10] Crea e rende eseguibile lo script di avvio
-RUN printf '#!/usr/bin/env bash\n\nset -e\n\n# Messaggio diagnostico di avvio\necho "Inizializzazione script di avvio del container..."\n/usr/bin/python3 --version\n\n# Aggiunge il percorso della libreria C++ (libfreenect2) per il runtime Python\nexport LD_LIBRARY_PATH="/usr/local/lib":$LD_LIBRARY_PATH\n\n# Esegue lo script Python, reindirizzando stderr (errori) a stdout (log)\nexec /usr/bin/python3 /app/kinect_mqtt_bridge.py 2>&1\n' > /run.sh
+# CONFIGURAZIONE AVVIO CON SCRIPT SEMPLIFICATA
+# [Step 8/10] Crea e rende eseguibile lo script di avvio. Rimosse le variabili di percorso.
+RUN printf '#!/usr/bin/env bash\n\nset -e\n\n# Messaggio diagnostico di avvio\necho "Inizializzazione script di avvio del container..." 2>&1\n/usr/bin/python3 --version 2>&1\n\n# Esegue lo script Python, reindirizzando stderr (errori) a stdout (log)\nexec /usr/bin/python3 /app/kinect_mqtt_bridge.py 2>&1\n' > /run.sh
 RUN chmod +x /run.sh
 
 # [Step 9/10] L'istruzione CMD esegue lo script di avvio.
