@@ -17,8 +17,10 @@ RUN git clone https://github.com/OpenKinect/libfreenect2.git /tmp/libfreenect2 &
     rm -rf /tmp/libfreenect2
 
 # [NUOVO STEP 4/11] Aggiunge il percorso della libreria C++ tramite file di configurazione e aggiorna la cache.
-# Questo è il metodo standard e robusto per Alpine Linux.
-RUN echo "/usr/local/lib" > /etc/ld.so.conf.d/libfreenect2.conf && ldconfig
+# CORREZIONE: Crea la directory ld.so.conf.d se non esiste.
+RUN mkdir -p /etc/ld.so.conf.d && \
+    echo "/usr/local/lib" > /etc/ld.so.conf.d/libfreenect2.conf && \
+    ldconfig
 
 WORKDIR /app
 
