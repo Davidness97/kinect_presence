@@ -1,14 +1,13 @@
 FROM ghcr.io/home-assistant/amd64-base:latest
 
 # --- CACHE BREAKER CRITICO ---
-# Questo comando costringe Docker a non usare vecchie istruzioni in cache 
-# che potrebbero contenere lo step 4/10 fallito, assicurando che l'ultima versione venga eseguita.
+# Invalida la cache per garantire che venga eseguita la nuova lista di pacchetti.
 RUN echo "Cache invalidation $(date +%s)"
 
 # [Step 2/10] Installa le dipendenze di build e di sistema
-# AGGIUNTE: libglvnd-dev, libxrandr-dev, libxcursor-dev per massima compatibilità grafica/X11
+# CORREZIONE FINALE: Lista di pacchetti che esistono in Alpine (rimossi i pacchetti X11 errati).
 RUN apk update && \
-    apk add --no-cache build-base cmake libusb-dev mesa-dev pkgconfig python3-dev py3-pip jq git libjpeg-turbo-dev libx11-dev libglvnd-dev libxrandr-dev libxcursor-dev && \
+    apk add --no-cache build-base cmake libusb-dev mesa-dev pkgconfig python3-dev py3-pip jq git libjpeg-turbo-dev libx11-dev && \
     rm -rf /var/cache/apk/*
 
 # [Step 3/10] Clona, compila e installa libfreenect2
@@ -50,3 +49,4 @@ RUN chmod +x /run.sh
 
 # [Step 9/10] L'istruzione CMD esegue lo script di avvio.
 CMD [ "/run.sh" ]
+
