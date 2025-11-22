@@ -22,12 +22,19 @@ WORKDIR /app
 COPY kinect_mqtt_bridge.py /app/
 
 # [Step 7/10] Installa le dipendenze di base per la compilazione Python
-RUN pip3 install --no-cache-dir --break-system-packages numpy cython setuptools
+# numpy, cython, setuptools sono ora installati qui.
+RUN pip3 install --no-cache-dir --break-system-packages numpy cython setuptools paho-mqtt
 
-# [Step 8/10 - CORRETTO] Installa paho-mqtt e pylibfreenect2
-# Imposta PKG_CONFIG_PATH e LD_LIBRARY_PATH per consentire a pylibfreenect2 
-# di trovare la libreria libfreenect2 installata in /usr/local/.
-RUN PKG_CONFIG_PATH="/usr/local/lib/pkgconfig" LD_LIBRARY_PATH="/usr/local/lib" pip3 install --no-cache-dir --break-system-packages --no-build-isolation paho-mqtt pylibfreenect2
+# NUOVO STEP [8/10 - CORRETTO]
+# Clona pylibfreenect2 e lo installa specificando i path di include di libfreenect2
+# per risolvere l'errore 'libfreenect2.pxd' not found.
+RUN git clone https://github.com/r9y9/pylibfreenect2.git /tmp/pylibfreenect2 && \
+    cd /tmp/pylibfreenect2 && \
+    PKG_CONFIG_PATH="/usr/local/lib/pkgconfig" \
+    LD_LIBRARY_PATH="/usr/local/lib" \
+    pip3 install --no-cache-dir --break-system-packages --no-build-isolation . && \
+    cd / && \
+    rm -rf /tmp/pylibfreenect2
 
 # Comando di esecuzione predefinito (presupponendo l'uso del file kinect_mqtt_bridge.py)
 CMD [ "python3", "kinect_mqtt_bridge.py" ]
