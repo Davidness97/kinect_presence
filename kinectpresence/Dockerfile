@@ -23,8 +23,8 @@ COPY kinect_mqtt_bridge.py /app/
 
 # Installazione delle dipendenze Python: paho-mqtt per la comunicazione e il compilatore del Kinect
 RUN pip3 install --no-cache-dir \
+    --break-system-packages \
     paho-mqtt \
-    # Compilatore e bridge per il Kinect v2
     pylibfreenect2
 
 # 3. Copia del run.sh e impostazione dei permessi
@@ -34,6 +34,7 @@ RUN chmod a+x /usr/bin/run.sh
 
 # 4. ENTRYPOINT: L'esecuzione parte da qui
 CMD [ "/usr/bin/run.sh" ]
+
 
 
 
