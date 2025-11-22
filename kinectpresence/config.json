@@ -1,12 +1,16 @@
 {
-  "name": "kinectpresence",
+  "name": "Kinect Presence Detector",
   "version": "1.0.0",
   "slug": "kinectpresence",
   "description": "Pubblica gli stati di presenza, distanza e conteggio del Kinect v2 su MQTT, gestendo soglie dinamiche.",
   "arch": ["amd64", "armhf", "aarch64"],
+  "init": false,
+  "uart": false,
   "startup": "services",
   "boot": "auto",
-  "host_network": true,                            
+  "host_network": true,
+  "ports": {},
+  "map": [],
   "options": {
     "mqtt_broker": "core-mqtt",
     "mqtt_user": "",
@@ -22,9 +26,12 @@
     "topic_presenza": "str",
     "soglia_pixel": "int",
     "umidita_profondita_mm": "int"
-  }
+  },
+  "devices": [
+    "/dev/bus/usb"
+  ],
+  "udev": true,
+  "privileged": [
+    "usb"
+  ]
 }
-
-
-
-
