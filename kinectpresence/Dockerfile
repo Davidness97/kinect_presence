@@ -28,6 +28,8 @@ WORKDIR /app
 
 # [Step 5/10] Copia lo script Python
 COPY kinect_mqtt_bridge.py /app/
+# Copia le regole UDEV
+COPY kinect.rules /etc/udev/rules.d/99-kinect.rules
 
 # [Step 6/10] Installa le dipendenze di base per la compilazione Python
 RUN pip3 install --no-cache-dir --break-system-packages numpy cython setuptools paho-mqtt
@@ -44,8 +46,7 @@ RUN git clone https://github.com/r9y9/pylibfreenect2.git /tmp/pylibfreenect2 && 
 
 # CONFIGURAZIONE AVVIO CON SCRIPT CRITICA: VARIABILI DI PERCORSO PER IL RUNTIME
 # [Step 8/10] Crea e rende eseguibile lo script di avvio. 
-# Rimossa LD_DEBUG perché non ha fornito diagnostica.
-RUN printf '#!/usr/bin/env bash\n\nset -e\n\n# Messaggio diagnostico di avvio\necho "Inizializzazione script di avvio del container..." 2>&1\n/usr/bin/python3 --version 2>&1\n\n# Aggiunge il percorso della libreria C++ (libfreenect2) per il runtime Python\nexport LD_LIBRARY_PATH="/usr/local/lib":$LD_LIBRARY_PATH\n\n# Aggiunge il percorso di installazione Python\nexport PYTHONPATH="/usr/local/lib/python3.11/site-packages":$PYTHONPATH\n\n# Esegue lo script Python, reindirizzando stderr (errori) a stdout (log)\nexec /usr/bin/python3 /app/kinect_mqtt_bridge.py 2>&1\n' > /run.sh
+RUN printf '#!/usr/bin/env bash\n\nset -e\n\n# Messaggio diagnostico di avvio\necho "Inizializzazione script di avvio del container..." 2>&1\n/usr/bin/python3 --version 2>&1\n\n# Aggiunge il percorso della libreria C++ (libfreenect2) per il runtime Python\nexport LD_LIBRARY_PATH="/usr/local/lib":$LD_LIBRARY_PATH\n\n# Aggiunge il percorso di installazione Python (rimosso 'python3.11' per genericità)\n# Il percorso corretto verrà risolto dal sistema al runtime.\nexport PYTHONPATH="/usr/local/lib/python3/site-packages":$PYTHONPATH\n\n# Esegue lo script Python, reindirizzando stderr (errori) a stdout (log)\nexec /usr/bin/python3 /app/kinect_mqtt_bridge.py 2>&1\n' > /run.sh
 RUN chmod +x /run.sh
 
 # [Step 9/10] L'istruzione CMD esegue lo script di avvio.
